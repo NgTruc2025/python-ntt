@@ -1,6 +1,5 @@
-
 import React, { useState, useEffect } from 'react';
-import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { UserCircle, LogOut } from 'lucide-react';
 import Sidebar from './components/Sidebar';
 import FunctionLookup from './components/FunctionLookup';
@@ -8,6 +7,7 @@ import KnowledgeBase from './components/KnowledgeBase';
 import PracticeArena from './components/PracticeArena';
 import LibraryExplorer from './components/LibraryExplorer';
 import RegistrationModal from './components/RegistrationModal';
+import AITutorChat from './components/AITutorChat';
 import { Student } from './types';
 
 const App: React.FC = () => {
@@ -76,6 +76,8 @@ const App: React.FC = () => {
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </div>
+
+          {student && <AITutorChat studentName={student.name} />}
         </main>
       </div>
     </Router>

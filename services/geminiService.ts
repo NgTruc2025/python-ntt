@@ -1,5 +1,5 @@
 
-import { GoogleGenAI, Type } from "@google/genai";
+import { GoogleGenAI, Type, Chat } from "@google/genai";
 import { AIAnalysisResult, Exercise, Difficulty, QuizQuestion } from "../types";
 
 // Always use process.env.API_KEY directly for initialization as per guidelines
@@ -32,7 +32,6 @@ export const analyzeCode = async (
       - suggestion (string): Gợi ý cách cải thiện.
     `;
 
-    // Coding analysis is a complex reasoning task
     const response = await ai.models.generateContent({
       model: PRO_MODEL,
       contents: prompt,
@@ -51,7 +50,6 @@ export const analyzeCode = async (
       },
     });
 
-    // Access the text property directly (not a method)
     return JSON.parse(response.text) as AIAnalysisResult;
   } catch (error) {
     console.error("Gemini Error:", error);
@@ -73,7 +71,6 @@ export const generateAIExercise = async (topic?: string): Promise<Exercise> => {
        Bài tập nên tập trung vào các khái niệm như biến, vòng lặp, hàm hoặc list.
        Trả về JSON theo format: title, description, difficulty (Dễ, Trung bình, Khó), initialCode, hint.`;
 
-  // Coding tasks should use the pro model for better reasoning
   const response = await ai.models.generateContent({
     model: PRO_MODEL,
     contents: prompt,
@@ -108,7 +105,6 @@ export const generateTopicQuiz = async (topicTitle: string, topicContent: string
   Hãy tạo 1 câu hỏi trắc nghiệm (multiple choice) để kiểm tra kiến thức của người học.
   Trả về JSON: question, options (mảng 4 lựa chọn), correctAnswerIndex (0-3), explanation (giải thích ngắn gọn).`;
 
-  // General text task uses the flash model
   const response = await ai.models.generateContent({
     model: FLASH_MODEL,
     contents: prompt,
@@ -128,4 +124,17 @@ export const generateTopicQuiz = async (topicTitle: string, topicContent: string
   });
 
   return JSON.parse(response.text) as QuizQuestion;
+};
+
+export const createAITutorChat = (studentName: string): Chat => {
+  return ai.chats.create({
+    model: FLASH_MODEL,
+    config: {
+      systemInstruction: `Bạn là PyMaster AI Tutor, một giáo viên Python thân thiện, kiên nhẫn và giỏi sư phạm. 
+      Bạn đang hỗ trợ học sinh tên là ${studentName}. 
+      Nhiệm vụ: Giải đáp các thắc mắc về Python, giải thích các khái niệm khó bằng ví dụ dễ hiểu, hỗ trợ debug code. 
+      Ngôn ngữ: Tiếng Việt. 
+      Phong cách: Khuyến khích, chuyên nghiệp nhưng gần gũi.`,
+    },
+  });
 };
